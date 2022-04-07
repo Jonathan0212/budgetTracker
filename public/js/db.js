@@ -25,7 +25,7 @@ function saveRecord(record) {
     const store = transaction.objectStore('pending');
     store.add(record);
 }
-
+// test note 
 function verifyDatabase() {
     const transaction = db.transaction('pending', 'readwrite');
     const store = transaction.objectStore('pending');
