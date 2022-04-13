@@ -31,20 +31,28 @@ function checkDatabase() {
     const store = transaction.objectStore('pending');
     const getAll = store.getAll();
 
-getAll.result.forEach((element) => {
-        fetch("/api/transaction", {
-        method: "POST",
-        body: JSON.stringify(element),
-        headers: {
-        Accept: "application/json, text/plain, */*",
-            "Content-Type": "application/json",
-        },
-        }).then((response) => {
-        console.log("successfully added data");
-        return response.json();
-    });
-});
-
+ getAll.onsuccess = function () {
+        if(getAll.result.length > 0) {
+            fetch('api/transaction/bulk', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'applcation/json',
+                },
+            })
+                .then((response) => response.json())
+                .then(() => {
+                    const transaction = db.transaction('pending', 'readwrite');
+                    const store = transaction.objectStore('pending');
+                    store.clear();
+                });
+        }
+    };
 }
+
+
+
+
 
 window.addEventListener('online', checkDatabase);
